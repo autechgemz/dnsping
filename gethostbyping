@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+import socket
+import time
+import argparse
+
+def main():
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-c', '--count', help='count', type=int, default=1024)
+  parser.add_argument('-i', '--interval', help='interval', type=float, default=0.01)
+  parser.add_argument('target', help='target')
+
+  args = parser.parse_args()
+
+  count_number = 0
+
+  while True:
+    try:
+      if count_number < args.count:
+        query = socket.gethostbyname(args.target)
+        time.sleep(args.interval)
+        if query:
+          print("!", end="", flush=True)
+          count_number+= 1
+      else:
+        break
+    except TimeoutError:
+      print("U", end="", flush=True)
+    except OSError:
+      print(".", end="", flush=True)
+    except KeyboardInterrupt:
+      break
+
+if __name__ == "__main__":
+    main()
+    print("")
