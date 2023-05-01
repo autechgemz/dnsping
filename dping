@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+import dns.resolver
+import time
+import argparse
+
+def main():
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-c', '--count', help='count', type=int, default=1024)
+  parser.add_argument('-i', '--interval', help='interval', type=float, default=0.1)
+  parser.add_argument('-t', '--type', help='type', type=str, default='A')
+  parser.add_argument('-d', '--debug', help='debug', action='store_true')
+  parser.add_argument('-s', '--server', help='server', type=str, default='8.8.8.8')
+  parser.add_argument('target', help='target')
+
+  args = parser.parse_args()
+
+  count_number = 0
+
+  resolver = dns.resolver.Resolver(configure=False)
+  resolver.nameservers = [args.server]
+
+  while True:
+    try:
+      if count_number < args.count:
+        answers = resolver.resolve(args.target, args.type)
+        print("!", end="", flush=True)
+        time.sleep(args.interval)
+        count_number+= 1
+    except (dns.query.BadResponse, dns.resolver.NXDOMAIN) as error:
+      print(".", end="", flush=True)
+      time.sleep(args.interval)
+    except KeyboardInterrupt:
+      break
+    except:
+      print("U", end="", flush=True)
+      time.sleep(args.interval)
+
+if __name__ == "__main__":
+  main()
